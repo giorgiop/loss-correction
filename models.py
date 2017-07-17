@@ -222,10 +222,10 @@ class CIFAR10Model(KerasModel):
 
     def load_data(self):
         (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-        X_train = X_train.reshape(X_train.shape[0], self.img_channels,
-                                  self.img_rows, self.img_cols)
-        X_test = X_test.reshape(X_test.shape[0], self.img_channels,
-                                self.img_rows, self.img_cols)
+        X_train = X_train.reshape(X_train.shape[0], self.img_rows, self.img_cols,
+                                  self.img_channels)
+        X_test = X_test.reshape(X_test.shape[0], self.img_rows, self.img_cols,
+                                self.img_channels)
 
         means = X_train.mean(axis=0)
         # std = np.std(X_train)
@@ -314,10 +314,10 @@ class CIFAR100Model(KerasModel):
 
     def load_data(self):
         (X_train, y_train), (X_test, y_test) = cifar100.load_data()
-        X_train = X_train.reshape(X_train.shape[0], self.img_channels,
-                                  self.img_rows, self.img_cols)
-        X_test = X_test.reshape(X_test.shape[0], self.img_channels,
-                                self.img_rows, self.img_cols)
+        X_train = X_train.reshape(X_train.shape[0], self.img_rows, self.img_cols,
+                                  self.img_channels)
+        X_test = X_test.reshape(X_test.shape[0], self.img_rows, self.img_cols,
+                                self.img_channels)
 
         means = X_train.mean(axis=0)
         # std = np.std(X_train)

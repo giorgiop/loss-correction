@@ -23,7 +23,7 @@ yes_bound = ['unhinged', 'sigmoid']
 def cifar10_resnet(depth, cifar10model, decay, loss):
 
     model = cifar10model
-    input = Input(shape=(model.img_channels, model.img_rows, model.img_cols))
+    input = Input(shape=(model.img_rows, model.img_cols, model.img_channels))
 
     # 1 conv + BN + relu
     b = Conv2D(filters=16, kernel_size=(model.num_conv, model.num_conv),
@@ -31,6 +31,10 @@ def cifar10_resnet(depth, cifar10model, decay, loss):
                kernel_regularizer=l2(decay), bias_regularizer=l2(0))(input)
     b = BatchNormalization(axis=1)(b)
     b = Activation("relu")(b)
+
+    # out = Flatten()(b)
+    # dense = Dense(output_dim=model.classes)(out)
+    # return Model(inputs=input, outputs=dense)
 
     # 1 res, no striding
     b = residual(model, decay, first=True)(b)  # 2 layers inside
