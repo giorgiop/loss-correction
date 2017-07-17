@@ -174,21 +174,21 @@ if __name__ == "__main__":
 
     def error_and_exit():
         print('Usage: ' + str(__file__) + ' -d dataset -l loss '
-              '-n noise_rate -a asymmetric_noise [-r n_runs]')
+              '-n noise_rate [-a asymmetric_noise -r n_runs]')
         sys.exit()
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:l:n:a:r:")
-    except getopt.GetoptError:
-        print(sys.argv)
-        error_and_exit()
+    opts, args = getopt.getopt(sys.argv[1:], "d:l:n:a:r:")
 
     # dataset/model cases: mnist, imdb, lstm, cifa100, cifar10_deep
     # cifar10_resnet{n} with a digit. See the call to cifar10 models
 
+    # loss: crossentropy, backward, forward, unhinged, sigmoid, ramp, savage, boot_soft
+
     n_runs = 1
     num_batch = 128
     asymmetric = 0  # symmetric noise by default
+
+    dataset, loss, noise = None, None, None
 
     for opt, arg in opts:
         if opt == '-d':
@@ -201,9 +201,11 @@ if __name__ == "__main__":
             asymmetric = np.array(arg).astype(np.int)
         elif opt == '-r':
             n_runs = np.array(arg).astype(np.int)
+        else:
+            error_and_exit()
 
     # compulsory params
-    if dataset is None or loss is None or noise is None or asymmetric is None:
+    if dataset is None or loss is None or noise is None:
         error_and_exit()
 
     print("Params: dataset=%s, loss=%s, noise=%s, asymmetric=%d, "
