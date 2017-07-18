@@ -34,9 +34,6 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
 
     val_split = 0.1
 
-    # cases: mnist, imdb, lstm, cifa100, cifar10_deep
-    # cifar10_resnet{n} with a digit. See the call to cifar10 models
-
     if dataset == 'mnist':
         kerasModel = MNISTModel(num_batch=num_batch)
         kerasModel.optimizer = Adagrad()
@@ -179,7 +176,7 @@ if __name__ == "__main__":
 
     opts, args = getopt.getopt(sys.argv[1:], "d:l:n:a:r:")
 
-    # dataset/model cases: mnist, imdb, lstm, cifa100, cifar10_deep
+    # dataset/model cases: mnist, imdb, lstm, cifa100
     # cifar10_resnet{n} with a digit. See the call to cifar10 models
 
     # loss: crossentropy, backward, forward, unhinged, sigmoid, ramp, savage, boot_soft

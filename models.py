@@ -19,7 +19,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.regularizers import l2
 from keras.constraints import maxnorm, unitnorm
 
-from resnet import cifar10_resnet, cifar10_plain
+from resnet import cifar10_resnet
 from noise import (build_uniform_P, build_for_cifar100, multiclass_noisify,
                    noisify_cifar10_asymmetric, noisify_binary_asymmetric,
                    noisify_cifar100_asymmetric, noisify_mnist_asymmetric,
@@ -117,14 +117,13 @@ class KerasModel():
             X_train_local, Y_train_local = X_train[idx_val:], Y_train[idx_val:]
 
             self.data_generator.fit(X_train_local)
-            # self.data_generator.fit(X_train)
 
             history = \
                 self.model.fit_generator(
                     self.data_generator.flow(X_train_local, Y_train_local,
                                              batch_size=self.num_batch),
-                    samples_per_epoch=len(X_train_local),
-                    epochs=self.epochs,
+                    steps_per_epoch=X_train.shape[0] // self.num_batch,
+                    epochs=self.epochs, max_q_size=100,
                     validation_data=(X_val, Y_val),
                     verbose=1, callbacks=callbacks)
 
@@ -209,16 +208,11 @@ class CIFAR10Model(KerasModel):
         self.num_conv = 3
         self.type = type
 
-        if type == 'shallow':
-            self.epochs = 70
-            self.augmentation = False
-            self.optimizer = Adagrad()
-        else:
-            self.epochs = 120
-            self.augmentation = True
-            self.optimizer = SGD(lr=0.1, momentum=0.9, decay=0.0)
-            self.lr_scheduler()
-            self.decay = 0.0001
+        self.epochs = 120
+        self.augmentation = True
+        self.optimizer = SGD(lr=0.1, momentum=0.9, decay=0.0)
+        self.lr_scheduler()
+        self.decay = 0.0001
 
     def load_data(self):
         (X_train, y_train), (X_test, y_test) = cifar10.load_data()
@@ -228,9 +222,8 @@ class CIFAR10Model(KerasModel):
                                 self.img_channels)
 
         means = X_train.mean(axis=0)
-        # std = np.std(X_train)
-        X_train = (X_train - means)  # / std
-        X_test = (X_test - means)  # / std
+        X_train = (X_train - means)
+        X_test = (X_test - means)
 
         if self.augmentation:
 
@@ -264,19 +257,8 @@ class CIFAR10Model(KerasModel):
 
     def build_model(self, loss, P=None):
 
-        # if hasattr(self, 'decay') and loss != 'crossentropy':
-        #    min_sv = 1. / linalg.svd(P, compute_uv=False, check_finite=False)[-1]
-        #    print('Decay: %.6f * %.6f' % (min_sv, self.decay))
-        #    self.decay *= min_sv
-
         if self.type[:-1] == 'resnet':
-
             model = cifar10_resnet(int(self.type[-1]), self, self.decay, loss)
-
-        elif self.type == 'deep':
-
-            # same as resnet2 but without shortcuts
-            model = cifar10_plain(1, self, self.decay, loss)
 
         self.compile(model, loss, P)
 
@@ -344,7 +326,6 @@ class CIFAR100Model(KerasModel):
     def build_model(self, loss, P=None):
 
         model = cifar10_resnet(9, self, self.decay, loss)
-
         self.compile(model, loss, P)
 
 
