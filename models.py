@@ -325,7 +325,7 @@ class CIFAR100Model(KerasModel):
 
     def build_model(self, loss, P=None):
 
-        model = cifar10_resnet(9, self, self.decay, loss)
+        model = cifar10_resnet(7, self, self.decay, loss)
         self.compile(model, loss, P)
 
 
