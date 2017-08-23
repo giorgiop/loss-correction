@@ -28,6 +28,9 @@ yes_bound = ['unhinged', 'sigmoid']
 
 
 def cifar10_resnet(depth, cifar10model, decay, loss):
+  
+    # how many layers this is going to create?
+    # 2 + 6 * depth
 
     model = cifar10model
     input = Input(shape=(model.img_rows, model.img_cols, model.img_channels))
