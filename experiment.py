@@ -8,6 +8,7 @@ import numpy as np
 
 from keras.utils import to_categorical
 from keras.optimizers import Adagrad
+from keras import backend as K
 from models import noisify_with_P
 from models import noisify_binary_asymmetric
 from models import noisify_cifar10_asymmetric, noisify_mnist_asymmetric
@@ -83,7 +84,7 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
             y_train, P = noisify_binary_asymmetric(y_train, noise,
                                                    random_state=run)
 
-    print(P)
+    print('T: \n', P)
 
     # convert class vectors to binary class matrices
     Y_train = to_categorical(y_train, kerasModel.classes)
@@ -113,6 +114,7 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
         # use all X_train
         P_est = est.fit(X_train).predict()
         print('Condition number:', np.linalg.cond(P_est))
+        print('T estimated: \n', P)
 
         # compile the model with the new estimated loss
         kerasModel.build_model('backward', P=P_est)
@@ -133,6 +135,7 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
                              filter_outlier=filter_outlier)
         # use all X_train
         P_est = est.fit(X_train).predict()
+        print('T estimated:', P)
 
         # compile the model with the new estimated loss
         kerasModel.build_model('forward', P=P_est)
@@ -217,3 +220,5 @@ if __name__ == "__main__":
 
     print(accuracies)
     print(np.mean(accuracies), np.std(accuracies))
+
+    K.clear_session()

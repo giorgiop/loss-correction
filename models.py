@@ -422,7 +422,7 @@ class NoiseEstimator():
     """Extension for keras model of noise.MultiClassNoiseEstimator"""
 
     def __init__(self, classifier, row_normalize=True, alpha=0.0,
-                 filter_outlier=False, cliptozero=False, verbose=1):
+                 filter_outlier=False, cliptozero=False, verbose=0):
         """classifier: an ALREADY TRAINED model. In the ideal case, classifier
         should be powerful enough to only make mistakes due to label noise."""
 
@@ -467,7 +467,7 @@ class NoiseEstimator():
 
         if self.cliptozero:
             idx = np.array(T < 10 ** -6)
-            print(idx)
+            # print(idx)
             T[idx] = 0.0
 
         if self.row_normalize:
