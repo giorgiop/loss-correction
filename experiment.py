@@ -30,6 +30,7 @@ def build_file_name(loc, dataset, loss, noise, asymmetric, run):
             str(asymmetric) + '_' +
             str(run))
 
+
 def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
                        asymmetric=0):
 
@@ -148,13 +149,13 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
     history = kerasModel.fit_model(model_file, X_train, Y_train,
                                    validation_split=val_split)
 
-    # history_file = build_file_name('history/', dataset, loss,
-    #                                noise, asymmetric, run)
+    history_file = build_file_name('history/', dataset, loss,
+                                   noise, asymmetric, run)
 
     # decomment for writing history
-    # with open(history_file, 'wb') as f:
-    #    pickle.dump(history, f)
-    #    print('History dumped at ' + str(history_file))
+    with open(history_file, 'wb') as f:
+        pickle.dump(history, f)
+        print('History dumped at ' + str(history_file))
 
     # LOAD THE BEST MODEL FOUND -- this should be useless as it is called twice
     # inside fit_model

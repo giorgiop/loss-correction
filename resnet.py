@@ -28,7 +28,7 @@ yes_bound = ['unhinged', 'sigmoid']
 
 
 def cifar10_resnet(depth, cifar10model, decay, loss):
-  
+
     # how many layers this is going to create?
     # 2 + 6 * depth
 
@@ -36,26 +36,31 @@ def cifar10_resnet(depth, cifar10model, decay, loss):
     input = Input(shape=(model.img_rows, model.img_cols, model.img_channels))
 
     # 1 conv + BN + relu
-    b = Conv2D(filters=32, kernel_size=(model.num_conv, model.num_conv),
+    filters = 16
+    b = Conv2D(filters=filters, kernel_size=(model.num_conv, model.num_conv),
                kernel_initializer="he_normal", padding="same",
                kernel_regularizer=l2(decay), bias_regularizer=l2(0))(input)
     b = BatchNormalization(axis=BN_AXIS)(b)
     b = Activation("relu")(b)
 
     # 1 res, no striding
-    b = residual(model, decay, first=True)(b)  # 2 layers inside
+    b = residual(model, filters, decay, first=True)(b)  # 2 layers inside
     for _ in np.arange(1, depth):  # start from 1 => 2 * depth in total
-        b = residual(model, decay)(b)
+        b = residual(model, filters, decay)(b)
+
+    filters *= 2
 
     # 2 res, with striding
-    b = residual(model, decay, more_filters=True)(b)
+    b = residual(model, filters, decay, more_filters=True)(b)
     for _ in np.arange(1, depth):
-        b = residual(model, decay)(b)
+        b = residual(model, filters, decay)(b)
+
+    filters *= 2
 
     # 3 res, with striding
-    b = residual(model, decay, more_filters=True)(b)
+    b = residual(model, filters, decay, more_filters=True)(b)
     for _ in np.arange(1, depth):
-        b = residual(model, decay)(b)
+        b = residual(model, filters, decay)(b)
 
     b = BatchNormalization(axis=BN_AXIS)(b)
     b = Activation("relu")(b)
@@ -79,16 +84,17 @@ def cifar10_resnet(depth, cifar10model, decay, loss):
     return Model(inputs=input, outputs=dense)
 
 
-def residual(model, decay, more_filters=False, first=False):
+def residual(model, filters, decay, more_filters=False, first=False):
 
     def f(input):
-        in_channel = input._keras_shape[1]
+        # in_channel = input._keras_shape[1]
+        out_channel = filters
 
         if more_filters and not first:
-            out_channel = in_channel * 2
+            # out_channel = in_channel * 2
             stride = 2
         else:
-            out_channel = in_channel
+            # out_channel = in_channel
             stride = 1
 
         if not first:

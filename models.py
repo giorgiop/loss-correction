@@ -3,7 +3,7 @@ from __future__ import print_function, division
 import numpy as np
 
 from keras.datasets import mnist, cifar10, cifar100, imdb
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.layers.core import Dense, Activation, Flatten
 from keras.layers.core import Dropout, SpatialDropout1D
 from keras.layers import Input
@@ -83,7 +83,7 @@ class KerasModel():
         model.compile(loss=self.make_loss(loss, P),
                       optimizer=self.optimizer, metrics=metrics)
 
-        # model.summary()
+        model.summary()
         self.model = model
 
     def load_model(self, file):
