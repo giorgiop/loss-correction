@@ -9,10 +9,9 @@ import numpy as np
 from keras.utils import to_categorical
 from keras.optimizers import Adagrad
 from keras import backend as K
-from models import noisify_with_P
-from models import noisify_binary_asymmetric
-from models import noisify_cifar10_asymmetric, noisify_mnist_asymmetric
-from models import noisify_cifar100_asymmetric
+from noise import (noisify_with_P, noisify_binary_asymmetric,
+                   noisify_cifar10_asymmetric, noisify_mnist_asymmetric,
+                   noisify_cifar100_asymmetric)
 from models import MNISTModel, CIFAR10Model, CIFAR100Model
 from models import IMDBModel, LSTMModel
 from models import NoiseEstimator
@@ -28,7 +27,7 @@ def build_file_name(loc, dataset, loss, noise, asymmetric, run):
             loss + '_' +
             str(noise) + '_' +
             str(asymmetric) + '_' +
-            str(run) + '.hst')
+            str(run))
 
 
 def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
