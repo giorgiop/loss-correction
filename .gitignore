@@ -4,3 +4,4 @@ output/tmp_model/imdb*
 output/tmp_model/mnist*
 output/tmp_model/cifar*
 output/tmp_model/lstm*
+output/history/*.hst

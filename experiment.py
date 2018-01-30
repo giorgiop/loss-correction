@@ -28,7 +28,7 @@ def build_file_name(loc, dataset, loss, noise, asymmetric, run):
             loss + '_' +
             str(noise) + '_' +
             str(asymmetric) + '_' +
-            str(run))
+            str(run) + '.hst')
 
 
 def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
@@ -156,10 +156,6 @@ def train_and_evaluate(dataset, loss, noise, run=0, num_batch=32,
     with open(history_file, 'wb') as f:
         pickle.dump(history, f)
         print('History dumped at ' + str(history_file))
-
-    # LOAD THE BEST MODEL FOUND -- this should be useless as it is called twice
-    # inside fit_model
-    # kerasModel.load_model(model_file)
 
     # test
     score = kerasModel.evaluate_model(X_test, Y_test)
