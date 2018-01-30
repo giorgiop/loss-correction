@@ -209,7 +209,6 @@ def noisify_cifar100_asymmetric(y_train, noise, random_state=None):
         for i in np.arange(nb_superclasses):
             init, end = i * nb_subclasses, (i+1) * nb_subclasses
             P[init:end, init:end] = build_for_cifar100(nb_subclasses, n)
-            # build_uniform_P(nb_subclasses, n)
 
         y_train_noisy = multiclass_noisify(y_train, P=P,
                                            random_state=random_state)

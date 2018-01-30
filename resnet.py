@@ -7,8 +7,8 @@ import sys
 import numpy as np
 
 from keras.models import Model
-from keras.layers import Input, Activation, merge, Dense, Flatten
-from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
+from keras.layers import Input, Activation, Dense, Flatten
+from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import AveragePooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
@@ -72,14 +72,17 @@ def cifar10_resnet(depth, cifar10model, decay, loss):
     if loss in yes_softmax:
         dense = Dense(units=model.classes, kernel_initializer="he_normal",
                       activation="softmax",
-                      kernel_regularizer=l2(decay), bias_regularizer=l2(0))(out)
+                      kernel_regularizer=l2(decay),
+                      bias_regularizer=l2(0))(out)
     elif loss in yes_bound:
         dense = Dense(units=model.classes, kernel_initializer="he_normal",
-                      kernel_regularizer=l2(decay), bias_regularizer=l2(0))(out)
+                      kernel_regularizer=l2(decay),
+                      bias_regularizer=l2(0))(out)
         dense = BatchNormalization(axis=BN_AXIS)(dense)
     else:
         dense = Dense(units=model.classes, kernel_initializer="he_normal",
-                      kernel_regularizer=l2(decay), bias_regularizer=l2(0))(out)
+                      kernel_regularizer=l2(decay),
+                      bias_regularizer=l2(0))(out)
 
     return Model(inputs=input, outputs=dense)
 
@@ -87,14 +90,10 @@ def cifar10_resnet(depth, cifar10model, decay, loss):
 def residual(model, filters, decay, more_filters=False, first=False):
 
     def f(input):
-        # in_channel = input._keras_shape[1]
-        out_channel = filters
 
         if more_filters and not first:
-            # out_channel = in_channel * 2
             stride = 2
         else:
-            # out_channel = in_channel
             stride = 1
 
         if not first:
@@ -103,14 +102,14 @@ def residual(model, filters, decay, more_filters=False, first=False):
         else:
             b = input
 
-        b = Conv2D(filters=out_channel,
+        b = Conv2D(filters=filters,
                    kernel_size=(model.num_conv, model.num_conv),
                    strides=(stride, stride),
                    kernel_initializer="he_normal", padding="same",
                    kernel_regularizer=l2(decay), bias_regularizer=l2(0))(b)
         b = BatchNormalization(axis=BN_AXIS)(b)
         b = Activation("relu")(b)
-        res = Conv2D(filters=out_channel,
+        res = Conv2D(filters=filters,
                      kernel_size=(model.num_conv, model.num_conv),
                      kernel_initializer="he_normal", padding="same",
                      kernel_regularizer=l2(decay), bias_regularizer=l2(0))(b)
@@ -126,7 +125,8 @@ def residual(model, filters, decay, more_filters=False, first=False):
             input = Conv2D(filters=residual_shape[3], kernel_size=(1, 1),
                            strides=(stride_width, stride_height),
                            kernel_initializer="he_normal",
-                           padding="valid", kernel_regularizer=l2(decay))(input)
+                           padding="valid",
+                           kernel_regularizer=l2(decay))(input)
 
         return add([input, res])
 

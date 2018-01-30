@@ -9,21 +9,14 @@ from keras.layers.core import Dropout, SpatialDropout1D
 from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
 from keras.layers.embeddings import Embedding
-from keras.callbacks import ModelCheckpoint, Callback
+from keras.callbacks import ModelCheckpoint
 from keras.callbacks import LearningRateScheduler
-from keras import backend as K
 from keras.preprocessing import sequence
 from keras.layers import LSTM
-from keras.optimizers import SGD, Adagrad
+from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
-from keras.regularizers import l2
-from keras.constraints import maxnorm, unitnorm
 
 from resnet import cifar10_resnet
-from noise import (build_uniform_P, build_for_cifar100, multiclass_noisify,
-                   noisify_cifar10_asymmetric, noisify_binary_asymmetric,
-                   noisify_cifar100_asymmetric, noisify_mnist_asymmetric,
-                   noisify_with_P)
 from loss import (crossentropy, robust, unhinged, sigmoid, ramp, savage,
                   boot_soft)
 
@@ -149,7 +142,6 @@ class KerasModel():
 
     def predict_proba(self, X):
         pred = self.model.predict(X, batch_size=self.num_batch, verbose=1)
-        # pred /= pred.sum()
         return pred
 
 
@@ -216,8 +208,8 @@ class CIFAR10Model(KerasModel):
 
     def load_data(self):
         (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-        X_train = X_train.reshape(X_train.shape[0], self.img_rows, self.img_cols,
-                                  self.img_channels)
+        X_train = X_train.reshape(X_train.shape[0], self.img_rows,
+                                  self.img_cols, self.img_channels)
         X_test = X_test.reshape(X_test.shape[0], self.img_rows, self.img_cols,
                                 self.img_channels)
 
@@ -296,8 +288,8 @@ class CIFAR100Model(KerasModel):
 
     def load_data(self):
         (X_train, y_train), (X_test, y_test) = cifar100.load_data()
-        X_train = X_train.reshape(X_train.shape[0], self.img_rows, self.img_cols,
-                                  self.img_channels)
+        X_train = X_train.reshape(X_train.shape[0], self.img_rows,
+                                  self.img_cols, self.img_channels)
         X_test = X_test.reshape(X_test.shape[0], self.img_rows, self.img_cols,
                                 self.img_channels)
 
@@ -419,7 +411,6 @@ class LSTMModel(KerasModel):
 
 
 class NoiseEstimator():
-    """Extension for keras model of noise.MultiClassNoiseEstimator"""
 
     def __init__(self, classifier, row_normalize=True, alpha=0.0,
                  filter_outlier=False, cliptozero=False, verbose=0):
@@ -467,7 +458,6 @@ class NoiseEstimator():
 
         if self.cliptozero:
             idx = np.array(T < 10 ** -6)
-            # print(idx)
             T[idx] = 0.0
 
         if self.row_normalize:

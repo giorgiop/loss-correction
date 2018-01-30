@@ -5,4 +5,4 @@ https://arxiv.org/abs/1609.03683
 
 ### News 30/1/2018
 
-Architectures of the residual networks for CIFAR10/100 have been fixed.
+Bugfix: residual nets architecture for CIFAR10/100 have been fixed.
