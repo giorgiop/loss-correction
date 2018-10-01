@@ -329,7 +329,7 @@ class IMDBModel(KerasModel):
         self.maxlen = 400
         self.embedding_dims = 50
         self.hidden_dims = 256
-        self.epochs = 1
+        self.epochs = 50
         self.classes = 2
         self.optimizer = None
 
